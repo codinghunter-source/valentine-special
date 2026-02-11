@@ -3,15 +3,15 @@ import Spline from "@splinetool/react-spline";
 import Swal from "sweetalert2";
 import { BsVolumeUpFill, BsVolumeMuteFill } from "react-icons/bs";
 
-import MouseStealing from './MouseStealer.jsx';
+import MouseStealing from "./MouseStealer.jsx";
 import lovesvg from "./assets/All You Need Is Love SVG Cut File.svg";
 import Lovegif from "./assets/GifData/main_temp.gif";
 import heartGif from "./assets/GifData/happy.gif";
 import sadGif from "./assets/GifData/sad.gif";
-import WordMareque from './MarqueeProposal.jsx';
-import purposerose from './assets/GifData/RoseCute.gif';
-import swalbg from './assets/Lovingbg2_main.jpg';
-import loveu from './assets/GifData/cutieSwal4.gif';
+import WordMareque from "./MarqueeProposal.jsx";
+import purposerose from "./assets/GifData/RoseCute.gif";
+import swalbg from "./assets/Lovingbg2_main.jpg";
+import loveu from "./assets/GifData/cutieSwal4.gif";
 
 //! yes - Gifs Importing
 import yesgif0 from "./assets/GifData/Yes/lovecutie0.gif";
@@ -49,11 +49,57 @@ import nomusic2 from "./assets/AudioTracks/Rejection_LoseYouToLoveMe.mp3";
 import nomusic3 from "./assets/AudioTracks/Reject_withoutMe.mp3";
 import nomusic4 from "./assets/AudioTracks/Neutral_Base_IHateU.mp3";
 import nomusic5 from "./assets/AudioTracks/Reject1_TooGood.mp3";
+import { trackPageView } from "./utils/analytics";
+import { trackEvent } from "./utils/analytics";
 
-const YesGifs = [yesgif0, yesgif1, yesgif2, yesgif3, yesgif4, yesgif5, yesgif6, yesgif7, yesgif8, yesgif9, yesgif10, yesgif11];
-const NoGifs = [nogif0, nogif0_1, nogif1, nogif2, nogif3, nogif4, nogif5, nogif6, nogif7, nogif8];
+const YesGifs = [
+  yesgif0,
+  yesgif1,
+  yesgif2,
+  yesgif3,
+  yesgif4,
+  yesgif5,
+  yesgif6,
+  yesgif7,
+  yesgif8,
+  yesgif9,
+  yesgif10,
+  yesgif11,
+];
+const NoGifs = [
+  nogif0,
+  nogif0_1,
+  nogif1,
+  nogif2,
+  nogif3,
+  nogif4,
+  nogif5,
+  nogif6,
+  nogif7,
+  nogif8,
+];
 const YesMusic = [yesmusic1, yesmusic3, yesmusic4, yesmusic2];
 const NoMusic = [nomusic1, nomusic2, nomusic3, nomusic4, nomusic5];
+
+function App() {
+  useEffect(() => {
+    trackPageView();
+  }, []);
+
+  return <>{/* your website content */}</>;
+}
+
+function Music() {
+  return (
+    <button
+      onClick={() => {
+        trackEvent("play_music_click", "Button", "Music Section Button");
+      }}
+    >
+      Play Music
+    </button>
+  );
+}
 
 export default function Page() {
   const [noCount, setNoCount] = useState(0);
@@ -72,31 +118,31 @@ export default function Page() {
     let position;
     let tooClose;
     const minDistance = 15; // Minimum distance in 'vw' or 'vh'
-  
+
     do {
       position = {
         top: `${Math.random() * 90}vh`, // Keep within 90% of viewport height
         left: `${Math.random() * 90}vw`, // Keep within 90% of viewport width
       };
-  
+
       tooClose = existingPositions.some((p) => {
         const dx = Math.abs(parseFloat(p.left) - parseFloat(position.left));
         const dy = Math.abs(parseFloat(p.top) - parseFloat(position.top));
         return Math.sqrt(dx * dx + dy * dy) < minDistance;
       });
     } while (tooClose);
-  
+
     return position;
   };
-  
+
   const handleMouseEnterYes = () => {
     const gifs = [];
     const positions = [];
-  
+
     for (let i = 0; i < 10; i++) {
       const newPosition = generateRandomPositionWithSpacing(positions);
       positions.push(newPosition);
-  
+
       gifs.push({
         id: `heart-${i}`,
         src: heartGif,
@@ -106,18 +152,18 @@ export default function Page() {
         },
       });
     }
-  
+
     setFloatingGifs(gifs);
   };
-  
+
   const handleMouseEnterNo = () => {
     const gifs = [];
     const positions = [];
-  
+
     for (let i = 0; i < 10; i++) {
       const newPosition = generateRandomPositionWithSpacing(positions);
       positions.push(newPosition);
-  
+
       gifs.push({
         id: `sad-${i}`,
         src: sadGif,
@@ -127,24 +173,24 @@ export default function Page() {
         },
       });
     }
-  
+
     setFloatingGifs(gifs);
   };
-  
+
   const handleMouseLeave = () => {
     setFloatingGifs([]); // floating GIFs on mouse leave
   };
 
   // This ensures the "Yes" gif keeps restarting and playing infinitely
   useEffect(() => {
-    if (gifRef.current && yesPressed && noCount>3) {
+    if (gifRef.current && yesPressed && noCount > 3) {
       gifRef.current.src = YesGifs[currentGifIndex];
     }
   }, [yesPressed, currentGifIndex]);
 
   // Use effect to change the Yes gif every 5 seconds
   useEffect(() => {
-    if (yesPressed && noCount>3) {
+    if (yesPressed && noCount > 3) {
       const intervalId = setInterval(() => {
         setCurrentGifIndex((prevIndex) => (prevIndex + 1) % YesGifs.length);
       }, 5000); // Change gif every 5 seconds
@@ -161,6 +207,9 @@ export default function Page() {
   }, [noCount]);
 
   const handleNoClick = () => {
+    // ✅ Track NO click
+    trackEvent("valentine_no_click", "Valentine Response", "User clicked NO");
+
     const nextCount = noCount + 1;
     setNoCount(nextCount);
 
@@ -177,17 +226,21 @@ export default function Page() {
       playMusic(NoMusic[nextSongIndex], NoMusic);
     }
   };
-  
+
   const handleYesClick = () => {
-    if(!popupShown){ // Only for Swal Fire Popup
+    // 🔥 Track YES click
+    trackEvent("valentine_yes_click", "Valentine Response", "User clicked YES");
+
+    if (!popupShown) {
+      // Only for Swal Fire Popup
       setYesPressed(true);
     }
-    if(noCount>3){
+    if (noCount > 3) {
       setYesPressed(true);
       playMusic(YesMusic[0], YesMusic); // Play the first "Yes" music by default
     }
   };
-  
+
   const playMusic = (url, musicArray) => {
     if (currentAudio) {
       currentAudio.pause(); // Stop the currently playing song
@@ -196,7 +249,7 @@ export default function Page() {
     const audio = new Audio(url);
     audio.muted = isMuted;
     setCurrentAudio(audio); // Set the new audio as the current one
-    audio.addEventListener('ended', () => {
+    audio.addEventListener("ended", () => {
       const currentIndex = musicArray.indexOf(url);
       const nextIndex = (currentIndex + 1) % musicArray.length;
       playMusic(musicArray[nextIndex], musicArray); // Play the next song in the correct array
@@ -212,7 +265,6 @@ export default function Page() {
   };
 
   const getNoButtonText = () => {
-
     const phrases = [
       "Nahi",
       "Kya tum sure ho?",
@@ -240,20 +292,21 @@ export default function Page() {
       "Mujhe intezaar mein mat rakhiye, please! 😬",
       "Plsss? :( Isse mera dil thoda sa dukhta hai. 💔",
     ];
-    
+
     return phrases[Math.min(noCount, phrases.length - 1)];
   };
 
   useEffect(() => {
     if (yesPressed && noCount < 4 && !popupShown) {
       Swal.fire({
-        title: "Main tumhe bahut pasand karta hoon ❤️. Tumhari simplicity aur nature ne dil jeet liya hai 🌸.Lekin itni pyaari ladki aur itni jaldi haan? 😌 Thoda sa aur time le lo, thoda sa aur soch lo — mujhe bilkul bura nahi lagega. 😊✨",
+        title:
+          "Main tumhe bahut pasand karta hoon ❤️. Tumhari simplicity aur nature ne dil jeet liya hai 🌸.Lekin itni pyaari ladki aur itni jaldi haan? 😌 Thoda sa aur time le lo, thoda sa aur soch lo — mujhe bilkul bura nahi lagega. 😊✨",
         showClass: {
           popup: `
             animate__animated
             animate__fadeInUp
             animate__faster
-          `
+          `,
         },
         width: 700,
         padding: "2em",
@@ -265,16 +318,25 @@ export default function Page() {
           right
           no-repeat
         `,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          trackEvent(
+            "popup_ok_click",
+            "Popup Action",
+            "User clicked OK on first popup",
+          );
+        }
       });
       setPopupShown(true);
       setYesPressed(false);
     }
   }, [yesPressed, noCount, popupShown]);
-  
+
   useEffect(() => {
     if (yesPressed && noCount > 3 && !yespopupShown) {
       Swal.fire({
-        title: "Main tumhe bahut value karta hoon 🤍. Dil se main hamesha tumhari respect aur care karunga ✨.</br> Kya hum is journey ko hamesha saath continue kar sakte hain?",
+        title:
+          "Main tumhe bahut value karta hoon 🤍. Dil se main hamesha tumhari respect aur care karunga ✨.</br> Kya hum is journey ko hamesha saath continue kar sakte hain?",
         width: 800,
         padding: "2em",
         color: "#716add",
@@ -294,7 +356,8 @@ export default function Page() {
   useEffect(() => {
     if (noCount == 25) {
       Swal.fire({
-        title: "Main tumhari respect karta hoon, tumhe admire karta hoon, aur tumhe lafzon se zyada cherish karta hoon 💖✨. Meri strength aur meri smile banne ke liye thank you 🤍😊.Tumhari presence meri duniya ko brighter aur mere dil ko calmer bana deti hai 🌸🌟. Please press ‘Yes’ if you like it. 🥰✨<br/>'Respect aur understanding se bana rishta waqt ke saath aur stable aur meaningful ho jaata hai'",
+        title:
+          "Main tumhari respect karta hoon, tumhe admire karta hoon, aur tumhe lafzon se zyada cherish karta hoon 💖✨. Meri strength aur meri smile banne ke liye thank you 🤍😊.Tumhari presence meri duniya ko brighter aur mere dil ko calmer bana deti hai 🌸🌟. Please press ‘Yes’ if you like it. 🥰✨<br/>'Respect aur understanding se bana rishta waqt ke saath aur stable aur meaningful ho jaata hai'",
         width: 850,
         padding: "2em",
         color: "#716add",
@@ -305,6 +368,14 @@ export default function Page() {
           right
           no-repeat
         `,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          trackEvent(
+            "final_popup_ok_click",
+            "Popup Action",
+            "User clicked OK on final popup",
+          );
+        }
       });
     }
   }, [noCount]);
@@ -319,7 +390,7 @@ export default function Page() {
       {noCount > 16 && noCount < 25 && yesPressed == false && <MouseStealing />}
 
       <div className="overflow-hidden flex flex-col items-center justify-center pt-4 h-screen -mt-16 selection:bg-rose-600 selection:text-white text-zinc-900">
-        {yesPressed && noCount>3 ? (
+        {yesPressed && noCount > 3 ? (
           <>
             <img
               ref={gifRef}
@@ -327,8 +398,37 @@ export default function Page() {
               src={YesGifs[currentGifIndex]}
               alt="Yes Response"
             />
-            <div className="text-4xl md:text-6xl font-bold my-2" style={{ fontFamily: "Charm, serif", fontWeight: "700", fontStyle: "normal" }}>Aap mere liye bahut khaas hain !!!</div>
-            <div  className="text-4xl md:text-4xl font-bold my-1" style={{ fontFamily: "Beau Rivage, serif", fontWeight: "500", fontStyle: "normal" }}> Aap meri zindagi ki sabse pyaari si dua hain. </div> 
+            <div
+              className="text-6xl md:text-6xl font-bold my-2"
+              style={{
+                fontFamily: "Charm, serif",
+                fontWeight: "700",
+                fontStyle: "normal",
+              }}
+            >
+              ✨Happy Valentine Antimaji✨
+            </div>
+            <div
+              className="text-4xl md:text-4xl font-bold my-2"
+              style={{
+                fontFamily: "Charm, serif",
+                fontWeight: "700",
+                fontStyle: "normal",
+              }}
+            >
+              Aap mere liye bahut khaas hain !!!
+            </div>
+            <div
+              className="text-3xl md:text-3xl font-bold my-1"
+              style={{
+                fontFamily: "Beau Rivage, serif",
+                fontWeight: "500",
+                fontStyle: "normal",
+              }}
+            >
+              {" "}
+              Aap meri zindagi ki sabse pyaari si dua hain.{" "}
+            </div>
             <WordMareque />
           </>
         ) : (
@@ -381,7 +481,11 @@ export default function Page() {
           className="fixed bottom-10 right-10 bg-gray-200 p-1 mb-2 rounded-full hover:bg-gray-300"
           onClick={toggleMute}
         >
-          {isMuted ? <BsVolumeMuteFill size={26} /> : <BsVolumeUpFill size={26} />}
+          {isMuted ? (
+            <BsVolumeMuteFill size={26} />
+          ) : (
+            <BsVolumeUpFill size={26} />
+          )}
         </button>
         <Footer />
       </div>
@@ -400,17 +504,11 @@ const Footer = () => {
       Made with{" "}
       <span role="img" aria-label="heart">
         ❤️
-      </span>
-      {" "}by Rohit
+      </span>{" "}
+      by Rohit
     </a>
   );
 };
-
-
-
-
-
-
 
 // ! Pathways-
 // https://app.spline.design/file/48a9d880-40c9-4239-bd97-973aae012ee0
