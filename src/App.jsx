@@ -399,7 +399,7 @@ export default function Page() {
               alt="Yes Response"
             />
             <div
-              className="text-6xl md:text-6xl font-bold my-2 text-center"
+              className="text-4xl md:text-4xl font-bold my-2 text-center"
               style={{
                 fontFamily: "Charm, serif",
                 fontWeight: "700",
@@ -409,7 +409,7 @@ export default function Page() {
               ✨Happy Valentine Antimaji✨
             </div>
             <div
-              className="text-4xl md:text-4xl font-bold my-2 text-center"
+              className="text-3xl md:text-3xl font-bold my-2 text-center"
               style={{
                 fontFamily: "Charm, serif",
                 fontWeight: "700",
@@ -419,7 +419,7 @@ export default function Page() {
               Aap mere liye bahut khaas hain !!!
             </div>
             <div
-              className="text-3xl md:text-3xl font-bold my-1 text-center"
+              className="text-2xl md:text-2xl font-bold my-1 text-center"
               style={{
                 fontFamily: "Beau Rivage, serif",
                 fontWeight: "500",
